@@ -247,7 +247,7 @@ namespace Practive5 {
 					   rc = connect(TCPSocket, (PSOCKADDR)&CallAddress, sizeof(CallAddress));
 					   if (rc == SOCKET_ERROR) {
 						   rc = WSAGetLastError();
-						   listBox1->Items->Add(String::Format("", rc));
+						   listBox1->Items->Add(String::Format("{0}", rc));
 						   return;
 					   }
 
