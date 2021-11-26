@@ -83,7 +83,7 @@ namespace Practive5 {
 			// listBox1
 			// 
 			this->listBox1->FormattingEnabled = true;
-			this->listBox1->Location = System::Drawing::Point(13, 13);
+			this->listBox1->Location = System::Drawing::Point(225, 12);
 			this->listBox1->Name = L"listBox1";
 			this->listBox1->Size = System::Drawing::Size(206, 173);
 			this->listBox1->TabIndex = 0;
@@ -91,7 +91,7 @@ namespace Practive5 {
 			// listBox2
 			// 
 			this->listBox2->FormattingEnabled = true;
-			this->listBox2->Location = System::Drawing::Point(225, 12);
+			this->listBox2->Location = System::Drawing::Point(13, 12);
 			this->listBox2->Name = L"listBox2";
 			this->listBox2->Size = System::Drawing::Size(206, 173);
 			this->listBox2->TabIndex = 1;
@@ -102,7 +102,7 @@ namespace Practive5 {
 			this->button1->Name = L"button1";
 			this->button1->Size = System::Drawing::Size(206, 23);
 			this->button1->TabIndex = 2;
-			this->button1->Text = L"Подключиться";
+			this->button1->Text = L"Connect";
 			this->button1->UseVisualStyleBackColor = true;
 			this->button1->Click += gcnew System::EventHandler(this, &MyForm::button1_Click);
 			// 
@@ -112,7 +112,7 @@ namespace Practive5 {
 			this->button2->Name = L"button2";
 			this->button2->Size = System::Drawing::Size(206, 23);
 			this->button2->TabIndex = 3;
-			this->button2->Text = L"Отключиться";
+			this->button2->Text = L"Turn off";
 			this->button2->UseVisualStyleBackColor = true;
 			this->button2->Click += gcnew System::EventHandler(this, &MyForm::button2_Click);
 			// 
@@ -122,7 +122,7 @@ namespace Practive5 {
 			this->button3->Name = L"button3";
 			this->button3->Size = System::Drawing::Size(121, 23);
 			this->button3->TabIndex = 4;
-			this->button3->Text = L"Отправить";
+			this->button3->Text = L"Send";
 			this->button3->UseVisualStyleBackColor = true;
 			this->button3->Click += gcnew System::EventHandler(this, &MyForm::button3_Click);
 			// 
@@ -137,7 +137,7 @@ namespace Practive5 {
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(510, 296);
+			this->ClientSize = System::Drawing::Size(461, 296);
 			this->Controls->Add(this->textBox1);
 			this->Controls->Add(this->button3);
 			this->Controls->Add(this->button2);
@@ -186,6 +186,8 @@ namespace Practive5 {
 			listBox1->Items->Add("Ошибка WSAAsyncSelect");
 			return;
 		} // if
+
+		//------------------------------------------------------------------------------------------------------------
 
 		TCPSocket = socket(AF_INET, SOCK_STREAM, 0);
 		if (TCPSocket == INVALID_SOCKET) {
@@ -245,15 +247,15 @@ namespace Practive5 {
 
 					   CallAddress.sin_port = SERVER_PORT_TCP;
 					   rc = connect(TCPSocket, (PSOCKADDR)&CallAddress, sizeof(CallAddress));
-					   if (rc == SOCKET_ERROR) {
+					   /*if (rc == SOCKET_ERROR) {
 						   rc = WSAGetLastError();
-						   listBox1->Items->Add(String::Format("{0}", rc));
+						   listBox1->Items->Add(String::Format("Ошибка connect {0}", rc));
 						   return;
-					   }
+					   }*/
 
 					   listBox1->Items->Add("Канал создан");
 
-					   rc = WSAAsyncSelect(TCPSocket, (HWND)(this->Handle.ToInt32()), WSA_TCP_NETEVENT, FD_READ | FD_CLOSE);
+					   rc = WSAAsyncSelect(TCPSocket, (HWND)(this->Handle.ToInt32()), WSA_TCP_NETEVENT, FD_READ);
 					   if (rc != 0) {
 						   listBox1->Items->Add("Ошибка WSAAsyncSelect");
 						   return;
@@ -271,7 +273,7 @@ namespace Practive5 {
 					   }
 					   if (rc >= 1) {
 						   String^ s = gcnew String(Buf);
-						   listBox2->Items->Add(s);
+						   listBox1->Items->Add(s);
 					   }
 				   }
 				   else {
