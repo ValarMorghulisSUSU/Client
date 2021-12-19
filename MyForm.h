@@ -102,7 +102,7 @@ namespace Practive5 {
 			this->button1->Name = L"button1";
 			this->button1->Size = System::Drawing::Size(206, 23);
 			this->button1->TabIndex = 2;
-			this->button1->Text = L"Connect";
+			this->button1->Text = L"Подключиться";
 			this->button1->UseVisualStyleBackColor = true;
 			this->button1->Click += gcnew System::EventHandler(this, &MyForm::button1_Click);
 			// 
@@ -112,7 +112,7 @@ namespace Practive5 {
 			this->button2->Name = L"button2";
 			this->button2->Size = System::Drawing::Size(206, 23);
 			this->button2->TabIndex = 3;
-			this->button2->Text = L"Turn off";
+			this->button2->Text = L"Отключиться";
 			this->button2->UseVisualStyleBackColor = true;
 			this->button2->Click += gcnew System::EventHandler(this, &MyForm::button2_Click);
 			// 
@@ -122,7 +122,7 @@ namespace Practive5 {
 			this->button3->Name = L"button3";
 			this->button3->Size = System::Drawing::Size(121, 23);
 			this->button3->TabIndex = 4;
-			this->button3->Text = L"Send";
+			this->button3->Text = L"Отправить";
 			this->button3->UseVisualStyleBackColor = true;
 			this->button3->Click += gcnew System::EventHandler(this, &MyForm::button3_Click);
 			// 
@@ -164,12 +164,13 @@ namespace Practive5 {
 		if (rc != 0) {
 			listBox1->Items->Add("Ошибка инициализации WSAStartup");
 			return;
-		} // if
+		}
 
+		//UDP
 		UDPSocket = socket(AF_INET, SOCK_DGRAM, 0);
 		if (UDPSocket == INVALID_SOCKET) {
 			listBox1->Items->Add("Протокол UDP установлен.");
-		} // if
+		}
 
 		memset(&OurAddress, 0, sizeof(OurAddress));
 		OurAddress.sin_family = AF_INET;
@@ -179,20 +180,19 @@ namespace Practive5 {
 		if (rc == SOCKET_ERROR) {
 			listBox1->Items->Add("Адресная ошибка");
 			return;
-		} // if
+		} 
 
 		rc = WSAAsyncSelect(UDPSocket, (HWND)(this->Handle.ToInt32()), WSA_UDP_NETEVENT, FD_READ);
 		if (rc != 0) {
 			listBox1->Items->Add("Ошибка WSAAsyncSelect");
 			return;
-		} // if
+		} 
 
-		//------------------------------------------------------------------------------------------------------------
-
+		//TCP
 		TCPSocket = socket(AF_INET, SOCK_STREAM, 0);
 		if (TCPSocket == INVALID_SOCKET) {
 			listBox1->Items->Add("Протокол TCP установлен.");
-		} // if
+		}
 
 		memset(&OurAddress, 0, sizeof(OurAddress));
 		OurAddress.sin_family = AF_INET;
@@ -202,13 +202,13 @@ namespace Practive5 {
 		if (rc == SOCKET_ERROR) {
 			listBox1->Items->Add("Адресная ошибка");
 			return;
-		} // if
+		} 
 
 		rc = WSAAsyncSelect(TCPSocket, (HWND)(this->Handle.ToInt32()), WSA_TCP_NETEVENT, FD_ACCEPT);
 		if (rc != 0) {
 			listBox1->Items->Add("Ошибка WSAAsyncSelect");
 			return;
-		} // if
+		} 
 
 		gethostname(Name, 101);
 		strcpy(Buf, "Имя компьютера ");
@@ -224,7 +224,7 @@ namespace Practive5 {
 			strcat(Buf, IpAddr);
 			String^ s2 = gcnew String(Buf);
 			listBox1->Items->Add(s2);
-		} // if
+		} 
 
 		listBox1->Items->Add(L"Сервер запущен");
 	}
@@ -247,11 +247,6 @@ namespace Practive5 {
 
 					   CallAddress.sin_port = SERVER_PORT_TCP;
 					   rc = connect(TCPSocket, (PSOCKADDR)&CallAddress, sizeof(CallAddress));
-					   /*if (rc == SOCKET_ERROR) {
-						   rc = WSAGetLastError();
-						   listBox1->Items->Add(String::Format("Ошибка connect {0}", rc));
-						   return;
-					   }*/
 
 					   listBox1->Items->Add("Канал создан");
 
@@ -261,8 +256,7 @@ namespace Practive5 {
 						   return;
 					   }
 				   }
-				   // else
-			   } // if
+			   }
 			   if (m.Msg == WSA_TCP_NETEVENT) {
 				   if (m.LParam.ToInt32() == FD_READ) {
 					   rc = recv((SOCKET)m.WParam.ToInt32(), (char*)Buf, sizeof(Buf) - 1, 0);
@@ -306,21 +300,20 @@ private: System::Void button3_Click(System::Object^ sender, System::EventArgs^ e
 		for (i = 0; i < l; i++) {
 			Buf2[i] = textBox1->Text->default[i];
 			Buf2[i + 1] = 0;
-		} // for
+		}
 
 		rc = send(TCPSocket, (char*)Buf2, 2 * l + 2, 0);
 		if (rc == SOCKET_ERROR) {
 			rc = WSAGetLastError();
 			listBox1->Items->Add(String::Format("Ошибка recv {0}", rc));
 			return;
-		} // if
+		}
 		String^ s = gcnew String(Buf2);
 		listBox2->Items->Add(s);
-	} // if
+	} 
 }
 private: System::Void button2_Click(System::Object^ sender, System::EventArgs^ e) {
 	closesocket(TCPSocket);
-	
 }
 };
 }
